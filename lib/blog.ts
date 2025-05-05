@@ -1,24 +1,24 @@
-import fs from "fs"
-import path from "path"
-import matter from "gray-matter"
-import type { Post } from "./types"
+import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
+import type { Post } from "./types";
 
-const postsDirectory = path.join(process.cwd(), "content/blog")
+const postsDirectory = path.join(process.cwd(), "content/blog");
 
 // Helper function to read a markdown file and parse frontmatter
 async function getPostData(filename: string): Promise<Post | null> {
   try {
-    const slug = filename.replace(/\.md$/, "")
-    const fullPath = path.join(postsDirectory, filename)
-    const fileContents = fs.readFileSync(fullPath, "utf8")
+    const slug = filename.replace(/\.md$/, "");
+    const fullPath = path.join(postsDirectory, filename);
+    const fileContents = fs.readFileSync(fullPath, "utf8");
 
     // Parse the frontmatter
-    const { data, content } = matter(fileContents)
+    const { data, content } = matter(fileContents);
 
     // Validate required fields
     if (!data.title || !data.date || !data.excerpt) {
-      console.warn(`Missing required fields in ${filename}`)
-      return null
+      console.warn(`Missing required fields in ${filename}`);
+      return null;
     }
 
     // Return the post data
@@ -33,76 +33,89 @@ async function getPostData(filename: string): Promise<Post | null> {
       category: data.category || "Uncategorized",
       tags: data.tags || [],
       featured: data.featured || false,
-    }
+    };
   } catch (error) {
-    console.error(`Error reading post ${filename}:`, error)
-    return null
+    console.error(`Error reading post ${filename}:`, error);
+    return null;
   }
 }
 
 // Calculate reading time based on content length
 function calculateReadingTime(content: string): number {
-  const wordsPerMinute = 200
-  const words = content.trim().split(/\s+/).length
-  return Math.ceil(words / wordsPerMinute)
+  const wordsPerMinute = 200;
+  const words = content.trim().split(/\s+/).length;
+  return Math.ceil(words / wordsPerMinute);
 }
 
 // Get all posts
 export async function getAllPosts(): Promise<Post[]> {
   // Create the directory if it doesn't exist
   if (!fs.existsSync(postsDirectory)) {
-    fs.mkdirSync(postsDirectory, { recursive: true })
+    fs.mkdirSync(postsDirectory, { recursive: true });
 
     // Create sample posts if directory is empty
-    await createSamplePosts()
+    await createSamplePosts();
   }
 
-  const filenames = fs.readdirSync(postsDirectory)
+  const filenames = fs.readdirSync(postsDirectory);
   const allPostsData = await Promise.all(
-    filenames.filter((filename) => filename.endsWith(".md")).map(async (filename) => await getPostData(filename)),
-  )
+    filenames
+      .filter((filename) => filename.endsWith(".md"))
+      .map(async (filename) => await getPostData(filename))
+  );
 
   // Filter out any null values and sort by date
   return allPostsData
     .filter((post): post is Post => post !== null)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 // Get a single post by slug
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   try {
-    return await getPostData(`${slug}.md`)
+    return await getPostData(`${slug}.md`);
   } catch (error) {
-    console.error(`Error getting post by slug ${slug}:`, error)
-    return null
+    console.error(`Error getting post by slug ${slug}:`, error);
+    return null;
   }
 }
 
 // Get featured posts
 export async function getFeaturedPost(): Promise<Post | null> {
-  const posts = await getAllPosts()
-  const featuredPosts = posts.filter((post) => post.featured)
+  const posts = await getAllPosts();
+  const featuredPosts = posts.filter((post) => post.featured);
 
-  return featuredPosts.length > 0 ? featuredPosts[0] : posts.length > 0 ? posts[0] : null
+  return featuredPosts.length > 0
+    ? featuredPosts[0]
+    : posts.length > 0
+    ? posts[0]
+    : null;
 }
 
 // Get recent posts
 export async function getRecentPosts(count: number): Promise<Post[]> {
-  const posts = await getAllPosts()
-  return posts.slice(0, count)
+  const posts = await getAllPosts();
+  return posts.slice(0, count);
 }
 
 // Get related posts
-export async function getRelatedPosts(currentSlug: string, count: number): Promise<Post[]> {
-  const allPosts = await getAllPosts()
-  const currentPost = await getPostBySlug(currentSlug)
+export async function getRelatedPosts(
+  currentSlug: string,
+  count: number
+): Promise<Post[]> {
+  const allPosts = await getAllPosts();
+  const currentPost = await getPostBySlug(currentSlug);
 
-  if (!currentPost) return []
+  if (!currentPost) return [];
 
   return allPosts
     .filter((post) => post.slug !== currentSlug)
-    .filter((post) => post.category === currentPost.category || post.tags.some((tag) => currentPost.tags.includes(tag)))
-    .slice(0, count)
+    .filter(
+      (post) =>
+        post.category === currentPost.category ||
+        post.tags.some((tag) => currentPost.tags.includes(tag))
+    )
+    .slice(0, count);
 }
 
 // Create sample posts if none exist
@@ -188,7 +201,7 @@ As autonomous vehicles move from science fiction to reality, they bring with the
 
 ## The Trolley Problem on Wheels
 
-Imagine a situation where a self-driving car must choose between swerving to avoid pedestrians but endangering its passengers, or protecting its passengers at the cost of harming others. Who should the car be programmed to prioritize? Should it minimize total casualties? Protect the most vulnerable? Always save its passengers?
+Imagine a situation where a self-driving car have to choose between swerving to avoid pedestrians but endangering its passengers, or protecting its passengers at the cost of harming others. Who should the car be programmed to prioritize? Should it minimize total casualties? Protect the most vulnerable? Always save its passengers?
 
 ## Programmed Ethics
 
@@ -206,11 +219,11 @@ Different cultures may also have varying perspectives on the right ethical frame
 
 As we navigate these challenging questions, it's crucial that the development of autonomous vehicle ethics involves diverse stakeholders—not just engineers and companies, but ethicists, policymakers, and the broader public. The decisions we make will not only determine how these vehicles behave on our roads but also set precedents for how we approach ethics in other autonomous systems.`,
     },
-  ]
+  ];
 
   // Create the sample posts
   for (const post of samplePosts) {
-    const fullPath = path.join(postsDirectory, post.filename)
-    fs.writeFileSync(fullPath, post.content)
+    const fullPath = path.join(postsDirectory, post.filename);
+    fs.writeFileSync(fullPath, post.content);
   }
 }
