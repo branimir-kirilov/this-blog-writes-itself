@@ -12,10 +12,10 @@ dotenv.config();
 const openai = new OpenAI();
 
 const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN,
+  auth: process.env.REPO_TOKEN,
 });
 
-const GITHUB_REPO = process.env.GITHUB_REPO;
+const REPO_NAME = process.env.REPO_NAME;
 const BLOG_POST_PATH = process.env.BLOG_POST_PATH || "content/posts/";
 const TOPICS_FILE = "used_topics.json";
 
@@ -111,7 +111,7 @@ async function generateBlogContent(topic) {
 }
 
 async function createPullRequest(topic, content, usedTopics) {
-  const [owner, repo] = GITHUB_REPO.split("/");
+  const [owner, repo] = REPO_NAME.split("/");
 
   // Generate branch name
   const timestamp = moment().format("YYYYMMDDHHMMSS");
