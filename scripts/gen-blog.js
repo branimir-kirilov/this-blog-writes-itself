@@ -167,6 +167,13 @@ async function createPullRequest(topic, content, usedTopics) {
   usedTopics.push(topic);
   saveUsedTopics(usedTopics);
 
+  const { data: fileData } = await octokit.repos.getContent({
+    owner,
+    repo,
+    path: TOPICS_FILE,
+    ref: branchName,
+  });
+
   // Commit the used topics list file
   const usedTopicsContent = fs.readFileSync(TOPICS_FILE, "utf-8");
   await octokit.repos.createOrUpdateFileContents({
@@ -176,6 +183,7 @@ async function createPullRequest(topic, content, usedTopics) {
     message: "Update used topics list",
     content: Buffer.from(usedTopicsContent).toString("base64"),
     branch: branchName,
+    sha: fileData.sha, // REQUIRED for update
   });
 
   // Create Pull Request
