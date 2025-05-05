@@ -1,4 +1,4 @@
-import { getPostBySlug, getRelatedPosts } from "@/lib/blog"
+import { getPostBySlug, getRelatedPosts, getAllPosts } from "@/lib/blog"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import { Calendar, Clock, Tag } from "lucide-react"
@@ -6,7 +6,8 @@ import BlogCard from "@/components/BlogCard"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import type { Metadata } from "next"
-import { MDXRemote } from "next-mdx-remote/rsc"
+import { Badge } from "@/components/ui/badge"
+import Markdown from "@/components/Markdown"
 
 interface BlogPostPageProps {
   params: { slug: string }
@@ -43,6 +44,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 }
 
+export async function generateStaticParams() {
+  const posts = await getAllPosts()
+
+  return posts.map((post) => ({
+    slug: post.slug,
+  }))
+}
+
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const post = await getPostBySlug(params.slug)
 
@@ -70,11 +79,20 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <Clock className="mr-2 h-4 w-4" style={{ color: "hsl(var(--cyan-accent))" }} />
               {post.readingTime} min read
             </div>
-            <div className="flex items-center">
-              <Tag className="mr-2 h-4 w-4" style={{ color: "hsl(var(--pink-accent))" }} />
-              {post.category}
-            </div>
           </div>
+
+          {post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-8">
+              <Tag className="h-4 w-4 mr-2 mt-1" style={{ color: "hsl(var(--pink-accent))" }} />
+              {post.tags.map((tag) => (
+                <Link key={tag} href={`/tags/${encodeURIComponent(tag.toLowerCase())}`}>
+                  <Badge variant="secondary" className="hover:bg-secondary/80">
+                    {tag}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="relative w-full h-[400px] mb-10 rounded-xl overflow-hidden">
@@ -82,7 +100,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
 
         <div className="prose prose-lg dark:prose-invert max-w-none">
-          <MDXRemote source={post.content} />
+          <Markdown content={post.content} />
         </div>
       </article>
 
