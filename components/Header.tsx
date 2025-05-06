@@ -30,7 +30,6 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
       <div className="container flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center space-x-2">
-          <PenLine className="h-6 w-6" style={{ color: "hsl(var(--purple-accent))" }} />
           <span className="text-xl font-bold gradient-text">This Blog Writes Itself</span>
         </Link>
 

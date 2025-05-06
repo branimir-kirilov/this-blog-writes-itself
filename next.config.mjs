@@ -8,23 +8,24 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['placeholder.svg'],
+    domains: ["placeholder.svg"],
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: '**',
+        protocol: "https",
+        hostname: "**",
       },
     ],
   },
-}
+};
 
 // Only use contentlayer if it's available
 let exportedConfig = nextConfig;
 try {
-  const { withContentlayer } = require('next-contentlayer');
+  const { withContentlayer } = await import("next-contentlayer2");
   exportedConfig = withContentlayer(nextConfig);
 } catch (error) {
-  console.warn('Contentlayer not available, skipping withContentlayer wrapper');
+  console.log(error);
+  console.warn("Contentlayer not available, skipping withContentlayer wrapper");
 }
 
 export default exportedConfig;

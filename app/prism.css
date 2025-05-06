@@ -2,90 +2,91 @@
  * Prism.js theme for code syntax highlighting
  */
 
-pre {
-  overflow-x: auto;
-  position: relative;
-  background-color: rgb(var(--code-bg));
-  border-radius: 0.5rem;
-  margin: 1.5rem 0;
-}
-
-.code-highlight {
-  display: block;
-  overflow-x: auto;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  line-height: 1.6;
-}
-
-.code-line {
-  display: block;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  border-left-width: 4px;
-  border-left-color: transparent;
-}
-
-.code-line.inserted {
-  background-color: rgba(16, 185, 129, 0.2); /* Tailwind green-500 with opacity */
-}
-
-.code-line.deleted {
-  background-color: rgba(239, 68, 68, 0.2); /* Tailwind red-500 with opacity */
-}
-
-.highlight-line {
-  margin-left: -1rem;
-  margin-right: -1rem;
-  background-color: rgba(55, 65, 81, 0.5); /* Tailwind gray-700 with opacity */
-  border-left-width: 4px;
-  border-left-color: rgb(59, 130, 246); /* Tailwind blue-500 */
-}
-
-.line-number::before {
-  display: inline-block;
-  width: 1rem;
-  text-align: right;
-  margin-right: 1rem;
-  margin-left: -0.5rem;
-  color: rgb(156, 163, 175); /* Tailwind gray-400 */
-  content: attr(line);
-}
-
-.rehype-code-title {
-  margin-bottom: -0.5rem;
-  padding: 0.5rem 1rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: rgb(var(--foreground));
-  background-color: rgb(var(--muted));
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
-  border: 1px solid rgb(var(--border));
-  border-bottom: none;
-}
-
-.rehype-code-title + pre {
-  margin-top: 0;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-
-.anchor {
-  visibility: hidden;
-  margin-left: -1em;
-  padding-right: 0.5em;
-  width: 1em;
-  cursor: pointer;
-}
-
-h1:hover .anchor,
-h2:hover .anchor,
-h3:hover .anchor,
-h4:hover .anchor,
-h5:hover .anchor,
-h6:hover .anchor {
-  visibility: visible;
-}
+ pre {
+    overflow-x: auto;
+    position: relative;
+    background-color: rgb(var(--code-bg));
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+  }
+  
+  .code-highlight {
+    display: block;
+    overflow-x: auto;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  
+  .code-line {
+    display: block;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-left-width: 4px;
+    border-left-color: transparent;
+  }
+  
+  .code-line.inserted {
+    background-color: rgba(16, 185, 129, 0.2); /* Tailwind green-500 with opacity */
+  }
+  
+  .code-line.deleted {
+    background-color: rgba(239, 68, 68, 0.2); /* Tailwind red-500 with opacity */
+  }
+  
+  .highlight-line {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    background-color: rgba(55, 65, 81, 0.5); /* Tailwind gray-700 with opacity */
+    border-left-width: 4px;
+    border-left-color: rgb(59, 130, 246); /* Tailwind blue-500 */
+  }
+  
+  .line-number::before {
+    display: inline-block;
+    width: 1rem;
+    text-align: right;
+    margin-right: 1rem;
+    margin-left: -0.5rem;
+    color: rgb(156, 163, 175); /* Tailwind gray-400 */
+    content: attr(line);
+  }
+  
+  .rehype-code-title {
+    margin-bottom: -0.5rem;
+    padding: 0.5rem 1rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgb(var(--foreground));
+    background-color: rgb(var(--muted));
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    border: 1px solid rgb(var(--border));
+    border-bottom: none;
+  }
+  
+  .rehype-code-title + pre {
+    margin-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+  
+  .anchor {
+    visibility: hidden;
+    margin-left: -1em;
+    padding-right: 0.5em;
+    width: 1em;
+    cursor: pointer;
+  }
+  
+  h1:hover .anchor,
+  h2:hover .anchor,
+  h3:hover .anchor,
+  h4:hover .anchor,
+  h5:hover .anchor,
+  h6:hover .anchor {
+    visibility: visible;
+  }
+  

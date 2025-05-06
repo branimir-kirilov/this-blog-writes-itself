@@ -1,0 +1,58 @@
+name: Auto-generate Blog Post
+
+on:
+  schedule:
+    - cron: "0 5 * * *" # Runs every day at 05:00 UTC
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Get current date
+        run: echo "TODAY=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Blog Post
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+          REPO_NAME: ${{ secrets.REPO_NAME }}
+          BLOG_POST_PATH: ${{ secrets.BLOG_POST_PATH }}
+        run: node scripts/gen-blog.js
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.REPO_TOKEN }}
+          commit-message: Generate blog post for ${{ env.TODAY }}
+          committer: Blog Bot <blog-bot@users.noreply.github.com>
+          author: Blog Bot <blog-bot@users.noreply.github.com>
+          signoff: false
+          branch: blog-${{ env.TODAY }}
+          delete-branch: true
+          title: "[Add blog post] - ${{ env.TODAY }}"
+          body: |
+            Generate blog post for ${{ env.TODAY }}
+          labels: |
+            automated pr
+          reviewers: branimir-kirilov
+          draft: false
