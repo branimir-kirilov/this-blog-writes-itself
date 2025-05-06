@@ -57,5 +57,4 @@ jobs:
             Generate blog post for ${{ env.TODAY }}
           labels: |
             automated pr
-          reviewers: branimir-kirilov
           draft: false
