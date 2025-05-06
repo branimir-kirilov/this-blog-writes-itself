@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PenLine, Github } from "lucide-react";
+import siteMetadata from "@/data/siteMetadata";
 
 export default function Footer() {
   return (
@@ -58,7 +59,7 @@ export default function Footer() {
             © {new Date().getFullYear()} This Blog Writes Itself. All content is
             AI-generated.
             <Link
-              href="#"
+              href={siteMetadata.siteRepo}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               <Github className="h-5 w-5" />
