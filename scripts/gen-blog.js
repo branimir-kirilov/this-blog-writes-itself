@@ -1,7 +1,5 @@
-import { Octokit } from "@octokit/rest";
 import OpenAI from "openai";
 import fs from "fs";
-import path from "path";
 import dotenv from "dotenv";
 import moment from "moment";
 import { z } from "zod";
@@ -11,10 +9,7 @@ dotenv.config();
 
 const openai = new OpenAI();
 
-const octokit = new Octokit({
-  auth: process.env.REPO_TOKEN,
-});
-
+const MODEL = "gpt-4o-mini";
 const REPO_NAME = process.env.REPO_NAME;
 const BLOG_POST_PATH = process.env.BLOG_POST_PATH || "content/posts/";
 const TOPICS_FILE = "used_topics.json";
@@ -39,7 +34,8 @@ async function getUniqueTopic(usedTopics) {
     });
 
     const response = await openai.responses.parse({
-      model: "gpt-4o-mini",
+      model: MODEL,
+      temperature: 0.7,
       input:
         "Suggest a unique, lesser-known software development topic for a blog post.",
       text: {
@@ -66,7 +62,7 @@ async function generateBlogContent(topic) {
 
     1. **Front Matter** with the following fields:
         - \`title\`: A catchy title for the blog post.
-        - \`date\`: ${todayDate} important - USE THIS DATE.
+        - \`date\`: ${todayDate}.
         - \`tags\`: A list of relevant tags (e.g., ['Tag1', 'Tag2', 'Tag3']).
         - \`draft\`: Set to \`false\`.
         - \`summary\`: A brief one-sentence summary of the blog post.
@@ -80,7 +76,7 @@ async function generateBlogContent(topic) {
 
     ---
     title: "The tile of the blog post"
-    date: '${todayDate} important - USE THIS DATE'
+    date: '<current date>'
     tags: ['a list of tags']
     summary: "<A summary of the blog post>"
     ---
@@ -100,49 +96,16 @@ async function generateBlogContent(topic) {
   `;
 
   const response = await openai.responses.create({
-    model: "gpt-4o-mini",
+    model: MODEL,
     input: prompt,
-    // max_tokens: 1500,
-    // temperature: 0.7,
+    temperature: 0.7,
   });
 
   console.log("response is", response);
   return response.output_text;
 }
 
-async function createPullRequest(topic, content, usedTopics) {
-  const [owner, repo] = REPO_NAME.split("/");
-
-  // Generate branch name
-  const timestamp = moment().format("YYYYMMDDHHMMSS");
-  const branchName = `auto-blog-${timestamp}`;
-
-  // Get the default branch for repo
-  const {
-    data: { default_branch },
-  } = await octokit.repos.get({
-    owner,
-    repo,
-  });
-
-  // Create new branch
-  const {
-    data: {
-      object: { sha },
-    },
-  } = await octokit.git.getRef({
-    owner,
-    repo,
-    ref: `heads/${default_branch}`,
-  });
-
-  await octokit.git.createRef({
-    owner,
-    repo,
-    ref: `refs/heads/${branchName}`,
-    sha,
-  });
-
+async function saveBlogPost(topic, content, usedTopics) {
   const slug = topic
     .toLowerCase()
     .replace(/\s+/g, "-")
@@ -153,50 +116,9 @@ async function createPullRequest(topic, content, usedTopics) {
   // Save blog post content to a file (for local reference, optional)
   fs.writeFileSync(filename, content);
 
-  // Commit blog post to GitHub
-  await octokit.repos.createOrUpdateFileContents({
-    owner,
-    repo,
-    path: filename,
-    message: `Add blog post: ${topic}`,
-    content: Buffer.from(content).toString("base64"),
-    branch: branchName,
-  });
-
   // Update the used topics list
   usedTopics.push(topic);
   saveUsedTopics(usedTopics);
-
-  const { data: fileData } = await octokit.repos.getContent({
-    owner,
-    repo,
-    path: TOPICS_FILE,
-    ref: branchName,
-  });
-
-  // Commit the used topics list file
-  const usedTopicsContent = fs.readFileSync(TOPICS_FILE, "utf-8");
-  await octokit.repos.createOrUpdateFileContents({
-    owner,
-    repo,
-    path: TOPICS_FILE,
-    message: "Update used topics list",
-    content: Buffer.from(usedTopicsContent).toString("base64"),
-    branch: branchName,
-    sha: fileData.sha, // REQUIRED for update
-  });
-
-  // Create Pull Request
-  const { data: pr } = await octokit.pulls.create({
-    owner,
-    repo,
-    title: `Add blog post: ${topic}`,
-    body: `Auto-generated blog post on **${topic}**.`,
-    head: branchName,
-    base: default_branch,
-  });
-
-  console.log(`✅ PR created: ${pr.html_url}`);
 }
 
 // Main workflow
@@ -205,7 +127,7 @@ async function createPullRequest(topic, content, usedTopics) {
     const usedTopics = loadUsedTopics();
     const topic = await getUniqueTopic(usedTopics);
     const content = await generateBlogContent(topic);
-    await createPullRequest(topic, content, usedTopics);
+    await saveBlogPost(topic, content, usedTopics);
   } catch (error) {
     console.error("Error:", error);
   }
