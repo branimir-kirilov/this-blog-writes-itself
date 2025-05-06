@@ -16,7 +16,6 @@ export default async function TagsPage() {
     <main className="min-h-screen bg-background py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-8 flex items-center">
-          <PenLine className="mr-3 h-8 w-8" style={{ color: "hsl(var(--pink-accent))" }} />
           Browse by Tag
         </h1>
 

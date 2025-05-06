@@ -1,11 +1,11 @@
-import type { Post } from "@/lib/types"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import Link from "next/link"
-import { Calendar, ArrowRight } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import type { Post } from "@/lib/types";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import Link from "next/link";
+import { Calendar, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface BlogCardProps {
-  post: Post
+  post: Post;
 }
 
 export default function BlogCard({ post }: BlogCardProps) {
@@ -13,26 +13,39 @@ export default function BlogCard({ post }: BlogCardProps) {
     <Card className="bg-card border-border overflow-hidden hover:border-primary/50 transition-all duration-300 flex flex-col h-full">
       <CardContent className="p-6 flex-grow">
         <div className="flex items-center text-sm text-muted-foreground mb-3">
-          <Calendar className="mr-2 h-4 w-4" style={{ color: "hsl(var(--purple-accent))" }} />
+          <Calendar
+            className="mr-2 h-4 w-4"
+            style={{ color: "hsl(var(--purple-accent))" }}
+          />
           {post.date}
         </div>
         <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
-          <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">
+          <Link
+            href={`/blog/${post.slug}`}
+            className="hover:text-primary transition-colors"
+          >
             {post.title}
           </Link>
         </h3>
-        <p className="text-muted-foreground line-clamp-3 mb-4">{post.excerpt}</p>
+        <p className="text-muted-foreground line-clamp-3 mb-4">
+          {post.summary}
+        </p>
 
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-auto">
             {post.tags.slice(0, 3).map((tag) => (
-              <Link key={tag} href={`/tags/${encodeURIComponent(tag.toLowerCase())}`}>
+              <Link
+                key={tag}
+                href={`/tags/${encodeURIComponent(tag.toLowerCase())}`}
+              >
                 <Badge variant="secondary" className="hover:bg-secondary/80">
                   {tag}
                 </Badge>
               </Link>
             ))}
-            {post.tags.length > 3 && <Badge variant="outline">+{post.tags.length - 3}</Badge>}
+            {post.tags.length > 3 && (
+              <Badge variant="outline">+{post.tags.length - 3}</Badge>
+            )}
           </div>
         )}
       </CardContent>
@@ -45,5 +58,5 @@ export default function BlogCard({ post }: BlogCardProps) {
         </Link>
       </CardFooter>
     </Card>
-  )
+  );
 }

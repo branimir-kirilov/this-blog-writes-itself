@@ -1,43 +1,40 @@
-import { PenLine } from "lucide-react"
-import Pagination from "@/components/Pagination"
-import Link from "next/link"
-import { Calendar } from "lucide-react"
-import { format } from "date-fns"
-import { getAllPosts } from "@/lib/blog"
+import Pagination from "@/components/Pagination";
+import Link from "next/link";
+import { Calendar } from "lucide-react";
+import { format } from "date-fns";
+import { allBlogs } from "contentlayer/generated";
 
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: { page?: string; category?: string }
+  searchParams: { page?: string; category?: string };
 }) {
-  const currentPage = Number(searchParams.page) || 1
-  const category = searchParams.category
-  const postsPerPage = 6
+  const { category, page } = await searchParams;
+  const currentPage = Number(page) || 1;
+  const postsPerPage = 6;
 
-  // Get all posts
-  const allPosts = await getAllPosts()
-
-  // Filter by category if provided
   const filteredPosts = category
-    ? allPosts.filter((post) => post.category.toLowerCase() === category.toLowerCase())
-    : allPosts
+    ? allBlogs.filter(
+        (post) => post.category.toLowerCase() === category.toLowerCase()
+      )
+    : allBlogs;
 
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage)
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
-  const startIndex = (currentPage - 1) * postsPerPage
-  const endIndex = startIndex + postsPerPage
-  const currentPosts = filteredPosts.slice(startIndex, endIndex)
+  const startIndex = (currentPage - 1) * postsPerPage;
+  const endIndex = startIndex + postsPerPage;
+  const currentPosts = filteredPosts.slice(startIndex, endIndex);
 
   return (
     <main className="min-h-screen bg-background py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-12 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 flex items-center justify-center">
-            <PenLine className="mr-3 h-8 w-8" style={{ color: "hsl(var(--cyan-accent))" }} />
             {category ? `${category} Articles` : "All Articles"}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Explore our collection of AI-generated articles covering technology, science, culture, and more.
+            Explore our collection of AI-generated articles covering technology,
+            science, culture, and more.
           </p>
         </div>
 
@@ -50,22 +47,32 @@ export default async function BlogPage({
               >
                 <div className="p-6 flex-grow">
                   <div className="flex items-center text-sm text-muted-foreground mb-3">
-                    <Calendar className="mr-2 h-4 w-4" style={{ color: "hsl(var(--purple-accent))" }} />
+                    <Calendar
+                      className="mr-2 h-4 w-4"
+                      style={{ color: "hsl(var(--purple-accent))" }}
+                    />
                     {format(new Date(post.date), "MMMM d, yyyy")}
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
-                    <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="hover:text-primary transition-colors"
+                    >
                       {post.title}
                     </Link>
                   </h3>
-                  <p className="text-muted-foreground line-clamp-3 mb-4">{post.excerpt}</p>
+                  <p className="text-muted-foreground line-clamp-3 mb-4">
+                    {post.summary}
+                  </p>
 
                   {post.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-auto">
                       {post.tags.slice(0, 3).map((tag) => (
                         <Link
                           key={tag}
-                          href={`/tags/${encodeURIComponent(tag.toLowerCase())}`}
+                          href={`/tags/${encodeURIComponent(
+                            tag.toLowerCase()
+                          )}`}
                           className="text-xs font-medium text-primary hover:text-primary/80 uppercase"
                         >
                           {tag}
@@ -87,7 +94,9 @@ export default async function BlogPage({
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">No articles found in this category.</p>
+            <p className="text-muted-foreground">
+              No articles found in this category.
+            </p>
           </div>
         )}
 
@@ -102,5 +111,5 @@ export default async function BlogPage({
         )}
       </div>
     </main>
-  )
+  );
 }

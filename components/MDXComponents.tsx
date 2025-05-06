@@ -1,35 +1,12 @@
-"use client"
+import TOCInline from "pliny/ui/TOCInline.js";
+import Pre from "pliny/ui/Pre.js";
+import type { MDXComponents } from "mdx/types";
+import Image from "./Image";
+import CustomLink from "./Link";
 
-import Link from "next/link"
-import { useMDXContent } from "@/lib/contentlayer-utils"
-
-const CustomLink = (props) => {
-  const href = props.href
-
-  if (href.startsWith("/")) {
-    return (
-      <Link href={href} {...props}>
-        {props.children}
-      </Link>
-    )
-  }
-
-  if (href.startsWith("#")) {
-    return <a {...props} />
-  }
-
-  return <a target="_blank" rel="noopener noreferrer" {...props} />
-}
-
-const components = {
+export const components: MDXComponents = {
+  Image,
+  TOCInline,
+  pre: Pre,
   a: CustomLink,
-}
-
-interface MDXComponentProps {
-  code: string
-}
-
-export function MDXComponent({ code }: MDXComponentProps) {
-  const Component = useMDXContent(code)
-  return <Component components={components} />
-}
+};
