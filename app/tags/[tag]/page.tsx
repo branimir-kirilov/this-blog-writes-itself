@@ -30,14 +30,11 @@ export async function generateStaticParams() {
 }
 
 export default async function TagPage({ params }: TagPageProps) {
-  const tag = decodeURIComponent(params.tag);
+  const { tag } = await params;
+  const decodedTag = decodeURIComponent(tag);
 
   // Get posts with this tag
-  const posts = await getPostsByTag(tag);
-
-  if (posts.length === 0) {
-    notFound();
-  }
+  const posts = await getPostsByTag(decodedTag);
 
   return (
     <main className="min-h-screen bg-background py-16 px-4 sm:px-6 lg:px-8">
@@ -55,7 +52,7 @@ export default async function TagPage({ params }: TagPageProps) {
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 flex items-center">
             Articles tagged with&nbsp;
-            <span className="gradient-text"> {tag}</span>
+            <span className="gradient-text"> {decodedTag}</span>
           </h1>
           <p className="text-lg text-muted-foreground">
             Found {posts.length} article{posts.length !== 1 ? "s" : ""} with
@@ -64,41 +61,49 @@ export default async function TagPage({ params }: TagPageProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.map((post) => (
-            <div
-              key={post.slug}
-              className="bg-card border-border overflow-hidden hover:border-primary/50 transition-all duration-300 flex flex-col h-full rounded-md border"
-            >
-              <div className="p-6 flex-grow">
-                <div className="flex items-center text-sm text-muted-foreground mb-3">
-                  <Calendar
-                    className="mr-2 h-4 w-4"
-                    style={{ color: "hsl(var(--purple-accent))" }}
-                  />
-                  {format(new Date(post.date), "MMMM d, yyyy")}
+          {posts.length > 0 ? (
+            posts.map((post) => (
+              <div
+                key={post.slug}
+                className="bg-card border-border overflow-hidden hover:border-primary/50 transition-all duration-300 flex flex-col h-full rounded-md border"
+              >
+                <div className="p-6 flex-grow">
+                  <div className="flex items-center text-sm text-muted-foreground mb-3">
+                    <Calendar
+                      className="mr-2 h-4 w-4"
+                      style={{ color: "hsl(var(--purple-accent))" }}
+                    />
+                    {format(new Date(post.date), "MMMM d, yyyy")}
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="hover:text-primary transition-colors"
+                    >
+                      {post.title}
+                    </Link>
+                  </h3>
+                  <p className="text-muted-foreground line-clamp-3 mb-4">
+                    {post.summary}
+                  </p>
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
+                <div className="px-6 pb-6 pt-0">
                   <Link
                     href={`/blog/${post.slug}`}
-                    className="hover:text-primary transition-colors"
+                    className="text-primary hover:text-primary/80 inline-flex items-center text-sm font-medium"
                   >
-                    {post.title}
+                    Read Article →
                   </Link>
-                </h3>
-                <p className="text-muted-foreground line-clamp-3 mb-4">
-                  {post.summary}
-                </p>
+                </div>
               </div>
-              <div className="px-6 pb-6 pt-0">
-                <Link
-                  href={`/blog/${post.slug}`}
-                  className="text-primary hover:text-primary/80 inline-flex items-center text-sm font-medium"
-                >
-                  Read Article →
-                </Link>
-              </div>
+            ))
+          ) : (
+            <div className="col-span-full">
+              <h1 className="text-4xl md:text-5xl text-muted-foreground font-bold text-foreground mb-4 flex items-center">
+                No articles found with this tag.
+              </h1>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </main>
