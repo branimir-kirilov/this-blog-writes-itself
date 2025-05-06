@@ -25,7 +25,7 @@ export async function generateStaticParams() {
   const tags = await getAllTags();
 
   return tags.map((tag) => ({
-    tag: encodeURIComponent(tag.toLowerCase()),
+    tag: tag.toLowerCase(),
   }));
 }
 
@@ -50,9 +50,9 @@ export default async function TagPage({ params }: TagPageProps) {
         </div>
 
         <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 flex items-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 inline">
             Articles tagged with&nbsp;
-            <span className="gradient-text"> {decodedTag}</span>
+            <span className="gradient-text">{decodedTag}</span>
           </h1>
           <p className="text-lg text-muted-foreground">
             Found {posts.length} article{posts.length !== 1 ? "s" : ""} with
