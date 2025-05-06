@@ -16,6 +16,9 @@ jobs:
       - name: Get current date
         run: echo "TODAY=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
+      - name: Get current timestamp
+        run: echo "TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
+
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
@@ -47,7 +50,7 @@ jobs:
           committer: Blog Bot <blog-bot@users.noreply.github.com>
           author: Blog Bot <blog-bot@users.noreply.github.com>
           signoff: false
-          branch: blog-${{ env.TODAY }}
+          branch: auto-blog-${{ env.TIMESTAMP }}
           delete-branch: true
           title: "[Add blog post] - ${{ env.TODAY }}"
           body: |
