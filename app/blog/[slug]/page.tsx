@@ -1,13 +1,12 @@
-import { getPostBySlug, getRelatedPosts, getAllPosts } from "@/lib/blog"
 import { notFound } from "next/navigation"
-import Image from "next/image"
 import { Calendar, Clock, Tag } from "lucide-react"
-import BlogCard from "@/components/BlogCard"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import type { Metadata } from "next"
 import { Badge } from "@/components/ui/badge"
 import Markdown from "@/components/Markdown"
+import { format } from "date-fns"
+import { getPostBySlug, getRelatedPosts } from "@/lib/blog"
 
 interface BlogPostPageProps {
   params: { slug: string }
@@ -32,24 +31,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       type: "article",
       publishedTime: post.date,
       authors: ["AI Author"],
-      images: [
-        {
-          url: post.coverImage || "/placeholder.svg",
-          width: 1200,
-          height: 630,
-          alt: post.title,
-        },
-      ],
     },
   }
-}
-
-export async function generateStaticParams() {
-  const posts = await getAllPosts()
-
-  return posts.map((post) => ({
-    slug: post.slug,
-  }))
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
@@ -59,7 +42,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound()
   }
 
-  const relatedPosts = await getRelatedPosts(post.slug, 3)
+  const formattedDate = format(new Date(post.date), "MMMM d, yyyy")
+
+  // Get related posts
+  const relatedPosts = await getRelatedPosts(params.slug, 3)
 
   return (
     <main className="min-h-screen bg-background py-16 px-4 sm:px-6 lg:px-8">
@@ -73,7 +59,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-8">
             <div className="flex items-center">
               <Calendar className="mr-2 h-4 w-4" style={{ color: "hsl(var(--purple-accent))" }} />
-              {post.date}
+              {formattedDate}
             </div>
             <div className="flex items-center">
               <Clock className="mr-2 h-4 w-4" style={{ color: "hsl(var(--cyan-accent))" }} />
@@ -95,10 +81,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           )}
         </div>
 
-        <div className="relative w-full h-[400px] mb-10 rounded-xl overflow-hidden">
-          <Image src={post.coverImage || "/placeholder.svg"} alt={post.title} fill className="object-cover" />
-        </div>
-
         <div className="prose prose-lg dark:prose-invert max-w-none">
           <Markdown content={post.content} />
         </div>
@@ -110,7 +92,31 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <h2 className="text-2xl font-bold text-foreground mb-8">Related Articles</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {relatedPosts.map((post) => (
-              <BlogCard key={post.slug} post={post} />
+              <div
+                key={post.slug}
+                className="bg-card border-border overflow-hidden hover:border-primary/50 transition-all duration-300 flex flex-col h-full rounded-md border"
+              >
+                <div className="p-6 flex-grow">
+                  <div className="flex items-center text-sm text-muted-foreground mb-3">
+                    <Calendar className="mr-2 h-4 w-4" style={{ color: "hsl(var(--purple-accent))" }} />
+                    {format(new Date(post.date), "MMMM d, yyyy")}
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
+                    <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">
+                      {post.title}
+                    </Link>
+                  </h3>
+                  <p className="text-muted-foreground line-clamp-3 mb-4">{post.excerpt}</p>
+                </div>
+                <div className="px-6 pb-6 pt-0">
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="text-primary hover:text-primary/80 inline-flex items-center text-sm font-medium"
+                  >
+                    Read Article →
+                  </Link>
+                </div>
+              </div>
             ))}
           </div>
         </section>

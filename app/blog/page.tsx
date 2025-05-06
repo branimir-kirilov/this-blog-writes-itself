@@ -1,7 +1,9 @@
-import { getAllPosts } from "@/lib/blog"
-import BlogCard from "@/components/BlogCard"
-import Pagination from "@/components/Pagination"
 import { PenLine } from "lucide-react"
+import Pagination from "@/components/Pagination"
+import Link from "next/link"
+import { Calendar } from "lucide-react"
+import { format } from "date-fns"
+import { getAllPosts } from "@/lib/blog"
 
 export default async function BlogPage({
   searchParams,
@@ -12,6 +14,7 @@ export default async function BlogPage({
   const category = searchParams.category
   const postsPerPage = 6
 
+  // Get all posts
   const allPosts = await getAllPosts()
 
   // Filter by category if provided
@@ -41,7 +44,45 @@ export default async function BlogPage({
         {currentPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {currentPosts.map((post) => (
-              <BlogCard key={post.slug} post={post} />
+              <div
+                key={post.slug}
+                className="bg-card border-border overflow-hidden hover:border-primary/50 transition-all duration-300 flex flex-col h-full rounded-md border"
+              >
+                <div className="p-6 flex-grow">
+                  <div className="flex items-center text-sm text-muted-foreground mb-3">
+                    <Calendar className="mr-2 h-4 w-4" style={{ color: "hsl(var(--purple-accent))" }} />
+                    {format(new Date(post.date), "MMMM d, yyyy")}
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
+                    <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">
+                      {post.title}
+                    </Link>
+                  </h3>
+                  <p className="text-muted-foreground line-clamp-3 mb-4">{post.excerpt}</p>
+
+                  {post.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-auto">
+                      {post.tags.slice(0, 3).map((tag) => (
+                        <Link
+                          key={tag}
+                          href={`/tags/${encodeURIComponent(tag.toLowerCase())}`}
+                          className="text-xs font-medium text-primary hover:text-primary/80 uppercase"
+                        >
+                          {tag}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="px-6 pb-6 pt-0">
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="text-primary hover:text-primary/80 inline-flex items-center text-sm font-medium"
+                  >
+                    Read Article →
+                  </Link>
+                </div>
+              </div>
             ))}
           </div>
         ) : (

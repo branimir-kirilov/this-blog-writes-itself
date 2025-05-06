@@ -20,6 +20,50 @@ The core quantum mechanical properties that enable this computational advantage 
 
 ## Engineering Challenges
 
+```js
+void setup() {
+  Serial.begin(115200);
+  Serial.setTimeout(2000);
+  while (!Serial) { }
+
+  initializeOledAndShowStartupScreen();
+
+  setupWifi();
+
+  configureFirebase();
+}
+
+void loop() {
+  if (Firebase.ready()) { // According to the docs, this needs to be called repeatedly to handle autentication
+    sendDataToRTDB();
+    delay(10000);
+  }
+}
+
+unsigned long getEpochTime() {
+  timeClient.update();
+  unsigned long now = timeClient.getEpochTime(); 
+  return now;
+}
+
+int getSensorReading() {
+  int sensorReading = analogRead(SensorPin);
+  Serial.printf("Sensor: %d \n", sensorReading);
+  return sensorReading;
+}
+
+int getMoisturePercent(int sensorReading) {
+  int soilMoisturePercent = map(sensorReading, WaterValue, AirValue, 100, 0);
+  if (soilMoisturePercent > 100) {
+    soilMoisturePercent = 100;
+  } else if (soilMoisturePercent < 0) {
+    soilMoisturePercent = 0;
+  }
+  Serial.printf("Moist.: %d%% \n", soilMoisturePercent);
+  return soilMoisturePercent;
+}
+```
+
 However, building practical quantum computers faces enormous engineering challenges. Qubits are extremely fragile and susceptible to environmental interference, requiring sophisticated error correction techniques and often extreme cooling to near absolute zero temperatures.
 
 ## Progress and Potential

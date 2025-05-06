@@ -1,10 +1,10 @@
-import { getPostsByTag, getAllTags } from "@/lib/blog"
 import { notFound } from "next/navigation"
-import BlogCard from "@/components/BlogCard"
-import { PenLine } from "lucide-react"
+import { PenLine, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import type { Metadata } from "next"
+import { format } from "date-fns"
+import { getPostsByTag, getAllTags } from "@/lib/blog"
 
 interface TagPageProps {
   params: { tag: string }
@@ -23,12 +23,14 @@ export async function generateStaticParams() {
   const tags = await getAllTags()
 
   return tags.map((tag) => ({
-    tag: tag.toLowerCase(),
+    tag: encodeURIComponent(tag.toLowerCase()),
   }))
 }
 
 export default async function TagPage({ params }: TagPageProps) {
   const tag = decodeURIComponent(params.tag)
+
+  // Get posts with this tag
   const posts = await getPostsByTag(tag)
 
   if (posts.length === 0) {
@@ -56,7 +58,31 @@ export default async function TagPage({ params }: TagPageProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {posts.map((post) => (
-            <BlogCard key={post.slug} post={post} />
+            <div
+              key={post.slug}
+              className="bg-card border-border overflow-hidden hover:border-primary/50 transition-all duration-300 flex flex-col h-full rounded-md border"
+            >
+              <div className="p-6 flex-grow">
+                <div className="flex items-center text-sm text-muted-foreground mb-3">
+                  <Calendar className="mr-2 h-4 w-4" style={{ color: "hsl(var(--purple-accent))" }} />
+                  {format(new Date(post.date), "MMMM d, yyyy")}
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
+                  <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">
+                    {post.title}
+                  </Link>
+                </h3>
+                <p className="text-muted-foreground line-clamp-3 mb-4">{post.excerpt}</p>
+              </div>
+              <div className="px-6 pb-6 pt-0">
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="text-primary hover:text-primary/80 inline-flex items-center text-sm font-medium"
+                >
+                  Read Article →
+                </Link>
+              </div>
+            </div>
           ))}
         </div>
       </div>

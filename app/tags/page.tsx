@@ -1,7 +1,7 @@
-import { getAllTags } from "@/lib/blog"
-import Link from "next/link"
 import { PenLine } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
+import { getAllTags } from "@/lib/blog"
 
 export const metadata = {
   title: "Tags | This Blog Writes Itself",
@@ -9,6 +9,7 @@ export const metadata = {
 }
 
 export default async function TagsPage() {
+  // Get all tags
   const tags = await getAllTags()
 
   return (

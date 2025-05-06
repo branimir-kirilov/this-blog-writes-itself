@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Configure pageExtensions to include md and mdx
-  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
-  // Optionally, add any other Next.js config below
   reactStrictMode: true,
   eslint: {
     ignoreDuringBuilds: true,
@@ -21,4 +18,13 @@ const nextConfig = {
   },
 }
 
-export default nextConfig
+// Only use contentlayer if it's available
+let exportedConfig = nextConfig;
+try {
+  const { withContentlayer } = require('next-contentlayer');
+  exportedConfig = withContentlayer(nextConfig);
+} catch (error) {
+  console.warn('Contentlayer not available, skipping withContentlayer wrapper');
+}
+
+export default exportedConfig;

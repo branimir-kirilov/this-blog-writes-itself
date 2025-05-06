@@ -1,6 +1,5 @@
 import type { Post } from "@/lib/types"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import Image from "next/image"
 import Link from "next/link"
 import { Calendar, ArrowRight } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -11,10 +10,7 @@ interface BlogCardProps {
 
 export default function BlogCard({ post }: BlogCardProps) {
   return (
-    <Card className="bg-card border-border overflow-hidden hover:border-primary/50 transition-all duration-300 flex flex-col">
-      <div className="relative h-48 w-full">
-        <Image src={post.coverImage || "/placeholder.svg"} alt={post.title} fill className="object-cover" />
-      </div>
+    <Card className="bg-card border-border overflow-hidden hover:border-primary/50 transition-all duration-300 flex flex-col h-full">
       <CardContent className="p-6 flex-grow">
         <div className="flex items-center text-sm text-muted-foreground mb-3">
           <Calendar className="mr-2 h-4 w-4" style={{ color: "hsl(var(--purple-accent))" }} />
