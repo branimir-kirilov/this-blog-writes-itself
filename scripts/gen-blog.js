@@ -9,7 +9,10 @@ dotenv.config();
 
 const openai = new OpenAI();
 
-const MODEL = "gpt-4o-mini";
+const TITLE_PROMPT =
+  "Can you suggest a focused, practical, and hands-on topic in software engineering—across any domain including AI, IoT, DevOps, or soft skills—that would make a useful technical blog post, ideally involving a specific tool, technology, or real-world application?";
+
+const MODEL = "gpt-4o";
 const BLOG_POST_PATH = process.env.BLOG_POST_PATH || "content/posts/";
 const TOPICS_FILE = "used_topics.json";
 
@@ -35,15 +38,14 @@ async function getUniqueTopic(usedTopics) {
     const response = await openai.responses.parse({
       model: MODEL,
       temperature: 0.7,
-      input:
-        "Suggest a unique and underexplored topic in software development suitable for a technical blog post.",
+      input: TITLE_PROMPT,
       text: {
         format: zodTextFormat(BlogTopic, "suggestion"),
       },
     });
 
-    console.log(response.output_parsed);
-    const topic = response.output_parsed.topic;
+    const topic = response.output_parsed.topic.replace(/^"|"$/g, "");
+    console.log("topic", topic);
     if (!usedTopics.includes(topic)) {
       return topic;
     }
@@ -79,6 +81,7 @@ async function generateBlogContent(topic) {
     - Support your points with:
       - Code samples (formatted in Markdown).
       - Visual metaphors, analogies, or case studies from real-life projects or industries.
+      - Images, diagrams, or screenshots to illustrate key points.
       - References to credible sources: articles, books, tools, tutorials, YouTube videos, or conference talks.
     - Conclude with a strong summary: Reiterate the key takeaways, why they matter, and how readers can apply the insights.
 
