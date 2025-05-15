@@ -10,7 +10,7 @@ dotenv.config();
 const openai = new OpenAI();
 
 const TITLE_PROMPT =
-  "Can you suggest a focused, practical, and hands-on topic in software engineering—across any domain including AI, IoT, DevOps, or soft skills—that would make a useful technical blog post, ideally involving a specific tool, technology, or real-world application?";
+  "Can you suggest a focused, practical, and hands-on topic in software engineering—across any domain including AI, prompt engineering, automated tools like v0 and bolt, frontend with react/angular/view or new frameworks, new and exciting things in IT world, or soft skills—that would make a useful technical blog post, ideally involving a specific tool, technology, or real-world application?";
 
 const MODEL = "gpt-4o";
 const BLOG_POST_PATH = process.env.BLOG_POST_PATH || "content/posts/";
