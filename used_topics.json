@@ -11,5 +11,6 @@
   "Implementing Continuous Integration in a Microservices Architecture with GitHub Actions and Docker",
   "Implementing AI-Powered Chatbots with LangChain and OpenAI in React",
   "Building a Conversational AI Chatbot with LangChain and OpenAI GPT",
-  "Building a Real-Time Collaboration App with Liveblocks and React"
+  "Building a Real-Time Collaboration App with Liveblocks and React",
+  "Building a Real-Time Chat Application with WebSockets and React"
 ]
